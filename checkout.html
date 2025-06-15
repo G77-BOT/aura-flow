@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Aura & Flow</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Aura & Flow</a>
+            <a href="index.html" class="back-to-shop"> &larr; Continue Shopping</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="checkout-section">
+            <div class="container">
+                <h1 class="section-title">Finalize Your Order</h1>
+                <div class="checkout-layout">
+                    <div id="order-summary" class="order-summary">
+                        <h2>Order Summary</h2>
+                        <div id="order-items-container">
+                            <!-- Items will be injected by checkout.js -->
+                        </div>
+                        <div id="order-total" class="order-total">
+                            <!-- Total will be injected by checkout.js -->
+                        </div>
+                    </div>
+                    <div class="checkout-info">
+                        <h2>Secure Payment</h2>
+                        <p>We partner with Stripe, a global leader in online payments, to ensure your transaction is safe and secure.</p>
+                        <p>Click the button below to proceed to our secure, Stripe-powered payment page to complete your purchase.</p>
+                        
+                        <button id="checkout-button" class="secure-payment-btn">Proceed to Secure Payment</button>
+                        <p id="checkout-error" class="error-message" style="color: red; margin-top: 1rem; text-align: center;"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Aura & Flow. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="checkout.js"></script>
+
+</body>
+</html>

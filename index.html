@@ -1,0 +1,121 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura & Flow - Curated Wellness & Style</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="#" class="logo">Aura & Flow</a>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-category="all">All</a></li>
+                    <li><a href="#" class="nav-link" data-category="Bikinis">Bikinis</a></li>
+                    <li><a href="#" class="nav-link" data-category="Lingerie">Lingerie</a></li>
+                    <li><a href="#" class="nav-link" data-category="Yoga Mats">Yoga Mats</a></li>
+                    <li><a href="#" class="nav-link" data-category="Leggings">Leggings</a></li>
+                </ul>
+            </nav>
+            <div id="cart-icon" class="cart-icon">
+                🛒
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find Your Balance, In Style.</h1>
+                <p>A curated collection of apparel and accessories for your mindful moments and active life.</p>
+                <a href="#product-section" class="cta-button">Shop The Collection</a>
+            </div>
+        </section>
+
+        <section id="product-section" class="product-showcase">
+            <div class="container">
+                <h2 class="section-title">Our Collection</h2>
+                <div id="product-grid" class="product-grid">
+                    <!-- Products will be injected here by JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="cart-panel" class="cart-panel">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button id="close-cart-btn" class="close-cart-btn">&times;</button>
+        </div>
+        <div id="cart-items-container" class="cart-items-container">
+            <!-- Cart items will be injected here -->
+        </div>
+         <div class="cart-footer">
+            <!-- Checkout button and total will be injected here by script.js -->
+        </div>
+    </div>
+    <div id="cart-overlay" class="cart-overlay"></div>
+
+    <div id="toast-container"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Aura & Flow. All Rights Reserved.</p>
+            <!--
+                ===============================================================
+                === DEPLOYING YOUR WEBSITE TO VERCEL - A QUICK GUIDE ===
+                ===============================================================
+
+                Your website is ready for deployment on Vercel! Here are the steps to get it live.
+                Vercel is a platform that makes it very easy to publish websites like this one.
+
+                --- Step 1: Push Your Code to a Git Provider ---
+                Vercel works by connecting to a Git repository.
+                1. If you don't have one, create a free account on GitHub (github.com).
+                2. Create a new repository on GitHub.
+                3. Upload all the files for this project (`index.html`, `style.css`, `script.js`, `api/`, `package.json`, etc.) to that repository. The `package.json` file MUST be in the root directory.
+
+                --- Step 2: Create a Vercel Account & Connect Your Project ---
+                1. Sign up for a free account at vercel.com. It's easiest to sign up using your GitHub account.
+                2. From your Vercel dashboard, click "Add New..." -> "Project".
+                3. Import the Git repository you just created. Vercel will automatically detect the project settings.
+
+                --- Step 3: Configure Environment Variables (VERY IMPORTANT!) ---
+                Your checkout will not work without this step. You need to provide your secret Stripe API key to Vercel so the serverless function can process payments securely.
+                
+                1. In your new Vercel project's dashboard, go to the "Settings" tab.
+                2. Click on "Environment Variables" in the side menu.
+                3. Create a new variable:
+                   - NAME:  STRIPE_SECRET_KEY
+                   - VALUE: Your Stripe secret key (it looks like `sk_test_...` or `sk_live_...`)
+                   - Make sure to leave the "Production", "Preview", and "Development" environment boxes checked.
+                4. Click "Save".
+
+                --- Step 4: Deploy! ---
+                1. Go back to your project's "Deployments" tab.
+                2. Find the latest deployment, click the "..." menu, and select "Redeploy". This ensures it uses the new environment variable.
+                3. Vercel will now build and deploy your site.
+                4. Once it's finished, you'll have a live URL (e.g., `your-project-name.vercel.app`) where you can see your website!
+
+                That's it! Your site will be live and your Stripe checkout will be functional.
+            -->
+        </div>
+    </footer>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js"
+      }
+    }
+    </script>
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
