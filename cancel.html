@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Canceled - Aura & Flow</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .cancel-container {
+            text-align: center;
+            padding: 5rem 1rem;
+            max-width: 600px;
+            margin: 4rem auto;
+            background: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        .cancel-container h1 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .cancel-container p {
+            margin-bottom: 2rem;
+        }
+        .checkout-button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .checkout-button:hover {
+            background-color: #8ca489;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Aura & Flow</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="cancel-container">
+            <h1>Order Canceled</h1>
+            <p>Your order has been canceled. You have not been charged.</p>
+            <p>You can return to your cart to try again or continue shopping.</p>
+            <a href="index.html" class="checkout-button">Return to Shopping</a>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Aura & Flow. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
