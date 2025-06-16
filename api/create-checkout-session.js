@@ -19,8 +19,8 @@ const productData = {
     2: { name: 'Tropical Escape Bikini', price: 64.99, image: 'bikini-2.png' },
     3: { name: 'Noir Lace Lingerie', price: 75.00, image: 'lingerie-1.png' },
     4: { name: 'Dusty Rose Comfort Set', price: 49.99, image: 'lingerie-2.png' },
-    5: { name: 'Celestial Moon Yoga Mat', price: 89.99, image: 'yoga-mat-1.png' },
-    6: { name: 'Eco-Friendly Cork Mat', price: 95.50, image: 'yoga-mat-2.png' },
+    5: { name: 'Celestial Moon Yoga Mat', price: 59.99, image: 'yoga-mat-1.png' },
+    6: { name: 'Eco-Friendly Cork Mat', price: 59.99, image: 'yoga-mat-2.png' },
     7: { name: 'Forest Green Leggings', price: 79.99, image: 'leggings-1.png' },
     8: { name: 'Deep Blue Flow Leggings', price: 84.99, image: 'leggings-2.png' },
 };
