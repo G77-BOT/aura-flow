@@ -46,7 +46,7 @@ const products = [
         name: 'Celestial Moon Yoga Mat', 
         category: 'Yoga Mats', 
         image: 'yoga-mat-1.png',
-        price: 89.99,
+        price: 59.99,
         inStock: true,
         description: 'A beautiful, non-slip yoga mat with a celestial moon phase print to inspire your practice.', 
         affiliateLink: null
@@ -56,7 +56,7 @@ const products = [
         name: 'Eco-Friendly Cork Mat', 
         category: 'Yoga Mats', 
         image: 'yoga-mat-2.png',
-        price: 95.50,
+        price: 59.99,
         inStock: true,
         description: 'A textured, eco-friendly cork yoga mat that offers superior grip and sustainability.', 
         affiliateLink: null
