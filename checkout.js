@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- STRIPE INITIALIZATION ---
     // Using environment variable for the publishable key
     // For local development, create a .env.local file with NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_key_here
-    const stripe = Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx');
+    const stripe = stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx');
 
     let cart = [];
     try {
