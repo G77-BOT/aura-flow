@@ -1,16 +1,16 @@
-// This is a Vercel Serverless Function, place it in the /api directory.
-//
-// VERCEL DEPLOYMENT REQUIREMENTS:
-// 1. package.json: A `package.json` file has been created for you in the project root.
-//    It lists `stripe` as a dependency, which Vercel will automatically install.
-//
-// 2. Environment Variables: You MUST set your Stripe secret key in your Vercel project settings.
-//    - Name: STRIPE_SECRET_KEY
-//    - Value: sk_test_... (your secret key from the Stripe dashboard)
-//
-// For a full step-by-step deployment guide, see the comments at the bottom of `index.html`.
+// Serverless Function for Stripe Checkout
+// Environment Variables Required:
+// - STRIPE_SECRET_KEY: Your Stripe secret key (starts with 'sk_live_' for production)
+// - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: Your Stripe publishable key (for client-side)
+// - NODE_ENV: 'production' or 'development' (automatically set by Vercel)
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// Validate environment variables
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('Missing required environment variable: STRIPE_SECRET_KEY');
+    process.exit(1);
+}
 
 // This is the source of truth for product data.
 // We look up prices here based on IDs from the cart to prevent price tampering on the client-side.

@@ -6,13 +6,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cartData = localStorage.getItem('auraFlowCart');
 
     // --- STRIPE INITIALIZATION ---
-    // IMPORTANT: You MUST replace the placeholder key below with your own Stripe Publishable Key.
-    //
-    // 1. The key below is a **generic test key** from Stripe's documentation. It is NOT your key.
-    // 2. It will allow you to test the checkout flow, but the payments will NOT go to your account.
-    // 3. To go live, find your key in your Stripe Dashboard -> Developers -> API keys.
-    // 4. Your key should start with `pk_test_` for testing or `pk_live_` for real payments.
-    const stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx'); // REPLACE THIS WITH YOUR KEY
+    // Using environment variable for the publishable key
+    // For local development, create a .env.local file with NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_key_here
+    const stripe = Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx');
 
     let cart = [];
     try {
