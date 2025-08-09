@@ -6,11 +6,14 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Validate environment variables
+// Validate required environment variables
 if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('Missing required environment variable: STRIPE_SECRET_KEY');
+    console.error('STRIPE_SECRET_KEY is not defined in environment variables');
     process.exit(1);
 }
+
+// Log environment for debugging
+console.log('Starting checkout session creation in environment:', process.env.NODE_ENV || 'development');
 
 // This is the source of truth for product data.
 // We look up prices here based on IDs from the cart to prevent price tampering on the client-side.

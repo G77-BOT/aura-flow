@@ -187,19 +187,43 @@ function renderProducts(category = 'all') {
     });
 }
 
+// Get payment links from environment variables or use defaults
+function getPaymentLinks() {
+    return {
+        5: process.env.PAYMENT_LINK_CELESTIAL_MAT || 'https://buy.stripe.com/00wfZa8Hnduq0Pu9f7gnK02',
+        6: process.env.PAYMENT_LINK_ECO_MAT || 'https://buy.stripe.com/3cIbIU4r7bmi7dS2QJgnK03'
+    };
+}
+
 function addToCart(productId) {
+    // Check if product is already in cart
     if (cart.find(item => item.id === productId)) {
         showToast('Item is already in your cart.');
         return;
     }
+    
     const productToAdd = products.find(p => p.id === productId);
-    if (productToAdd) {
-        cart.push(productToAdd);
+    if (!productToAdd) return;
+    
+    // Check if this is a product with direct payment link
+    const paymentLinks = getPaymentLinks();
+    const hasDirectLink = paymentLinks[productId];
+    
+    if (hasDirectLink) {
+        // For products with direct payment links, go straight to checkout
+        cart = [productToAdd]; // Clear cart and add only this item
         saveCart();
         updateCartUI();
-        showToast('Added to cart!');
-        playAudio('add');
+        window.location.href = 'checkout.html';
+        return;
     }
+    
+    // For regular products, add to cart normally
+    cart.push(productToAdd);
+    saveCart();
+    updateCartUI();
+    showToast('Added to cart!');
+    playAudio('add');
 }
 
 function removeFromCart(productId) {
@@ -258,15 +282,51 @@ function renderCartItems() {
 function updateCartFooter() {
     if (cart.length > 0) {
         const total = cart.reduce((sum, item) => sum + item.price, 0);
+<<<<<<< HEAD
+        const paymentLinks = getPaymentLinks();
+        
+        // Check if we have a product with direct payment link
+        const hasDirectLink = cart.length === 1 && paymentLinks[cart[0].id];
+        
+=======
+>>>>>>> origin/main
         cartFooter.innerHTML = `
             <div class="cart-total">
                 <span>Subtotal:</span>
                 <span>$${total.toFixed(2)}</span>
             </div>
+<<<<<<< HEAD
+            <button class="checkout-btn" id="checkout-button">
+                <span class="button-text">${hasDirectLink ? 'Proceed to Secure Checkout' : 'View Cart'}</span>
+                <span class="button-loader" style="display: none;">Processing...</span>
+            </button>
+        `;
+        
+        // Add event listener to the checkout button
+        document.getElementById('checkout-button')?.addEventListener('click', () => {
+            if (cart.length === 0) {
+                showToast('Your cart is empty. Add items before checkout.');
+                return;
+            }
+            
+            // If we have a direct payment link, go straight to it
+            if (hasDirectLink) {
+                window.location.href = paymentLinks[cart[0].id];
+                return;
+            }
+            
+            // Otherwise, go to the checkout page
+            saveCart();
+            window.location.href = 'checkout.html';
+        });
+    } else {
+        cartFooter.innerHTML = '<p class="empty-cart-msg">Your cart is empty. Add some items to get started!</p>';
+=======
             <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
         `;
     } else {
         cartFooter.innerHTML = ''; // Clear footer when cart is empty
+>>>>>>> origin/main
     }
 }
 

@@ -8,12 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         .thank-you-container {
             text-align: center;
-            padding: 5rem 1rem;
-            max-width: 600px;
-            margin: 4rem auto;
+            padding: 3rem 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
             background: var(--card-background);
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -22,28 +23,84 @@
             font-family: var(--font-heading);
             color: var(--secondary-color);
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         .thank-you-container p {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .order-details {
+            text-align: left;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .order-details h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #eee;
         }
         .home-button {
+            display: inline-block;
             background-color: var(--primary-color);
             color: white;
             padding: 1rem 2.5rem;
             text-decoration: none;
             border-radius: 50px;
             font-weight: 600;
+<<<<<<< HEAD
+            margin-top: 1.5rem;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .home-button:hover {
             background-color: #c8a39e;
             transform: translateY(-3px);
         }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: #e74c3c;
+            background: #fde8e6;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
     </style>
 </head>
 <body>
-
     <header>
         <div class="container">
             <a href="index.html" class="logo">Aura & Flow</a>
@@ -53,18 +110,85 @@
     <main>
         <div class="thank-you-container">
             <h1>Thank You!</h1>
-            <p>Your order has been placed successfully. We've received it and are getting it ready for you.</p>
-            <p>A confirmation email is on its way to you shortly.</p>
+            <p>Your order has been placed successfully.</p>
+            <p>We've sent a confirmation email with your order details.</p>
+            
+            <div id="order-details" class="order-details">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 1rem;">Loading order details...</span>
+                </div>
+            </div>
+            
+            <p>If you have any questions about your order, please contact us at <a href="mailto:support@auraflow.com">support@auraflow.com</a>.</p>
             <a href="index.html" class="home-button">Continue Shopping</a>
         </div>
     </main>
     
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const orderDetailsEl = document.getElementById('order-details');
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (!sessionId) {
+            showError('No session ID found. Please check your confirmation email for order details.');
+            return;
+        }
+        
+        try {
+            // In a real application, you would verify the session with your server
+            // For now, we'll just show a success message with the session ID
+            const response = await fetch(`/api/checkout-session?session_id=${sessionId}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch order details');
+            }
+            
+            const session = await response.json();
+            
+            // Display order details
+            orderDetailsEl.innerHTML = `
+                <h3>Order Details</h3>
+                <p>Order #${session.id.substring(0, 8).toUpperCase()}</p>
+                ${session.line_items.data.map(item => `
+                    <div class="order-item">
+                        <span>${item.description || 'Item'}</span>
+                        <span>$${(item.amount_total / 100).toFixed(2)}</span>
+                    </div>
+                `).join('')}
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span>$${(session.amount_total / 100).toFixed(2)}</span>
+                </div>
+            `;
+            
+            // Clear the cart since the order is complete
+            localStorage.removeItem('auraFlowCart');
+            
+        } catch (error) {
+            console.error('Error loading order details:', error);
+            showError('We received your order, but there was an error loading the details. Please check your email for confirmation.');
+        }
+    });
+    
+    function showError(message) {
+        const orderDetailsEl = document.getElementById('order-details');
+        orderDetailsEl.innerHTML = `
+            <div class="error-message">
+                ${message}
+            </div>
+        `;
+    }
+    </script>
     <footer>
         <div class="container">
             <p>&copy; 2024 Aura & Flow. All Rights Reserved.</p>
         </div>
     </footer>
+=======
 
+>>>>>>> origin/main
     <script>
         // Clear the cart from localStorage after a successful purchase
         localStorage.removeItem('auraFlowCart');
