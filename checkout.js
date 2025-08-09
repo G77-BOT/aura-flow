@@ -1,17 +1,19 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // DOM Elements
     const orderItemsContainer = document.getElementById('order-items-container');
     const orderTotalContainer = document.getElementById('order-total');
     const checkoutButton = document.getElementById('checkout-button');
     const errorMessage = document.getElementById('checkout-error');
+    const mainContainer = document.querySelector('.checkout-section .container');
 
-    // Initialize Stripe with your publishable key from environment variables
+    // Initialize Stripe with publishable key from environment variables
     const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
     
     if (!stripePublishableKey) {
         console.error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined in environment variables');
         errorMessage.textContent = 'Payment system configuration error. Please try again later.';
         errorMessage.style.display = 'block';
-        checkoutButton.disabled = true;
+        if (checkoutButton) checkoutButton.disabled = true;
         return;
     }
     
@@ -19,15 +21,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Payment links from environment variables
     const paymentLinks = {
-        5: process.env.PAYMENT_LINK_CELESTIAL_MAT || '',
-        6: process.env.PAYMENT_LINK_ECO_MAT || ''
+        5: process.env.PAYMENT_LINK_CELESTIAL_MAT || 'https://buy.stripe.com/00wfZa8Hnduq0Pu9f7gnK02',
+        6: process.env.PAYMENT_LINK_ECO_MAT || 'https://buy.stripe.com/3cIbIU4r7bmi7dS2QJgnK03'
     };
     
-    // Validate payment links
-    if (!paymentLinks[5] || !paymentLinks[6]) {
-        console.error('Payment links are not properly configured in environment variables');
-    }
-
     // Load cart from localStorage
     let cart = [];
     try {
@@ -45,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ? 'Your cart is empty. Please add items before checking out.' 
             : 'Error loading your cart. Please try again.';
         errorMessage.style.display = 'block';
-        checkoutButton.disabled = true;
+        if (checkoutButton) checkoutButton.disabled = true;
         return;
     }
 
@@ -53,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderOrderItems() {
         if (!cart || cart.length === 0) {
             orderItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
-            checkoutButton.disabled = true;
+            if (checkoutButton) checkoutButton.disabled = true;
             return;
         }
 
@@ -93,86 +90,87 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Handle checkout button click
-    checkoutButton.addEventListener('click', async () => {
-        if (cart.length === 0) {
-            errorMessage.textContent = 'Your cart is empty.';
-            errorMessage.style.display = 'block';
-            return;
-        }
-
-        checkoutButton.disabled = true;
-        const buttonText = checkoutButton.querySelector('.button-text');
-        const buttonLoader = checkoutButton.querySelector('.button-loader');
-        buttonText.style.display = 'none';
-        buttonLoader.style.display = 'inline';
-        
-        errorMessage.textContent = '';
-        errorMessage.style.display = 'none';
-
-        try {
-            // For now, we'll handle one item at a time with direct payment links
-            // In a real app, you'd want to handle multiple items in a single transaction
-            const item = cart[0]; // Get the first item in cart
-            
-            // Check if we have a direct payment link for this product
-            if (paymentLinks[item.id]) {
-                window.location.href = paymentLinks[item.id];
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', async () => {
+            if (cart.length === 0) {
+                errorMessage.textContent = 'Your cart is empty.';
+                errorMessage.style.display = 'block';
                 return;
             }
-            
-            // Fallback to Stripe Checkout if no direct link is found
-            const response = await fetch('/api/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    items: [{
-                        price_data: {
-                            currency: 'usd',
-                            product_data: {
-                                name: item.name,
-                                description: item.description || '',
-                                images: item.image ? [
-                                    item.image.startsWith('http') 
-                                        ? item.image 
-                                        : `${window.location.origin}/${item.image}`
-                                ] : []
-                            },
-                            unit_amount: Math.round((item.price || 0) * 100), // Convert to cents
-                        },
-                        quantity: 1,
-                    }],
-                    success_url: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-                    cancel_url: `${window.location.origin}/checkout.html`,
-                }),
-            });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
+            // Show loading state
+            checkoutButton.disabled = true;
+            const buttonText = checkoutButton.querySelector('.button-text');
+            const buttonLoader = checkoutButton.querySelector('.button-loader');
+            if (buttonText) buttonText.style.display = 'none';
+            if (buttonLoader) buttonLoader.style.display = 'inline';
+            
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
 
-            const result = await response.json();
-            
-            if (!result.url) {
-                throw new Error('No redirect URL received from server');
+            try {
+                // Check if we have a single item with a direct payment link
+                if (cart.length === 1 && paymentLinks[cart[0].id]) {
+                    window.location.href = paymentLinks[cart[0].id];
+                    return;
+                }
+
+                // For multiple items or items without direct payment links, use Stripe Checkout
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        items: cart.map(item => ({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                            image: item.image,
+                            quantity: 1
+                        })),
+                        success_url: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+                        cancel_url: `${window.location.origin}/checkout.html`,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create checkout session');
+                }
+
+                const session = await response.json();
+                
+                // Redirect to Stripe Checkout
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.id
+                });
+
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                errorMessage.textContent = error.message || 'An error occurred during checkout. Please try again.';
+                errorMessage.style.display = 'block';
+                
+                // Reset button state
+                checkoutButton.disabled = false;
+                if (buttonText) buttonText.style.display = 'inline';
+                if (buttonLoader) buttonLoader.style.display = 'none';
             }
-            
-            // Redirect to the payment page
-            window.location.href = result.url;
-        } catch (error) {
-            console.error('Checkout error:', error);
-            errorMessage.textContent = error.message || 'An error occurred during checkout. Please try again.';
-            errorMessage.style.display = 'block';
-            checkoutButton.disabled = false;
-            checkoutButton.textContent = 'Proceed to Secure Payment';
-            
-            // Log the full error for debugging
-            console.error('Full error:', error);
-        }
-    });
+        });
+    }
 
     // Initial render
     renderOrderItems();
+    
+    // Fade in the content
+    if (mainContainer) {
+        mainContainer.style.opacity = 0;
+        setTimeout(() => {
+            mainContainer.style.transition = 'opacity 0.5s ease';
+            mainContainer.style.opacity = 1;
+        }, 100);
+    }
 });

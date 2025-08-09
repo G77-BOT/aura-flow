@@ -3,3 +3,18 @@
 .env.example
 .env
 node_modules
+package-lock.json
+# Ignore built files and environment-specific files
+/dist
+/build
+.cache
+.env.*.local
+
+# Ignore editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

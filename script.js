@@ -282,16 +282,20 @@ function renderCartItems() {
 function updateCartFooter() {
     if (cart.length > 0) {
         const total = cart.reduce((sum, item) => sum + item.price, 0);
+<<<<<<< HEAD
         const paymentLinks = getPaymentLinks();
         
         // Check if we have a product with direct payment link
         const hasDirectLink = cart.length === 1 && paymentLinks[cart[0].id];
         
+=======
+>>>>>>> origin/main
         cartFooter.innerHTML = `
             <div class="cart-total">
                 <span>Subtotal:</span>
                 <span>$${total.toFixed(2)}</span>
             </div>
+<<<<<<< HEAD
             <button class="checkout-btn" id="checkout-button">
                 <span class="button-text">${hasDirectLink ? 'Proceed to Secure Checkout' : 'View Cart'}</span>
                 <span class="button-loader" style="display: none;">Processing...</span>
@@ -317,6 +321,12 @@ function updateCartFooter() {
         });
     } else {
         cartFooter.innerHTML = '<p class="empty-cart-msg">Your cart is empty. Add some items to get started!</p>';
+=======
+            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+        `;
+    } else {
+        cartFooter.innerHTML = ''; // Clear footer when cart is empty
+>>>>>>> origin/main
     }
 }
 
