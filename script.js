@@ -49,7 +49,7 @@ const products = [
         price: 59.99,
         inStock: true,
         description: 'A beautiful, non-slip yoga mat with a celestial moon phase print to inspire your practice.', 
-        affiliateLink: null
+        paymentLink: 'https://buy.stripe.com/00wfZa8Hnduq0Pu9f7gnK02' 
     },
     { 
         id: 6, 
@@ -59,6 +59,7 @@ const products = [
         price: 59.99,
         inStock: true,
         description: 'A textured, eco-friendly cork yoga mat that offers superior grip and sustainability.', 
+        paymentLink: 'https://buy.stripe.com/3cIbIU4r7bmi7dS2QJgnK03', 
         affiliateLink: null
     },
     { 
@@ -188,18 +189,27 @@ function renderProducts(category = 'all') {
 }
 
 function addToCart(productId) {
-    if (cart.find(item => item.id === productId)) {
-        showToast('Item is already in your cart.');
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    // If product has a direct payment link, redirect to it immediately
+    if (product.paymentLink) {
+        window.location.href = product.paymentLink;
         return;
     }
-    const productToAdd = products.find(p => p.id === productId);
-    if (productToAdd) {
-        cart.push(productToAdd);
-        saveCart();
-        updateCartUI();
-        showToast('Added to cart!');
-        playAudio('add');
+    
+    // For regular products, add to cart
+    const cartItem = cart.find(item => item.id === productId);
+    if (cartItem) {
+        cartItem.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
     }
+    
+    saveCart();
+    updateCartUI();
+    showToast(`${product.name} added to cart`);
+    playAudio('add');
 }
 
 function removeFromCart(productId) {
@@ -256,22 +266,47 @@ function renderCartItems() {
 }
 
 function updateCartFooter() {
-    if (cart.length > 0) {
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        
-        // Create checkout URL with cart data
-        const cartData = encodeURIComponent(JSON.stringify(cart));
-        const checkoutUrl = `checkout.html?cart=${cartData}`;
-        
+    const cartFooter = document.getElementById('cart-footer');
+    if (!cartFooter) return;
+    
+    if (cart.length === 0) {
+        cartFooter.innerHTML = '<p>Your cart is empty</p>';
+        return;
+    }
+    
+    const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    
+    // Check if any item in cart has a direct payment link
+    const hasDirectPayment = cart.some(item => item.paymentLink);
+    
+    if (hasDirectPayment) {
+        // For direct payment items, show a simplified checkout button
         cartFooter.innerHTML = `
             <div class="cart-total">
-                <span>Subtotal:</span>
-                <span>$${total.toFixed(2)}</span>
+                <span>Total: $${total.toFixed(2)}</span>
+                <button class="checkout-btn direct-payment">Checkout with Direct Payment</button>
             </div>
-            <a href="${checkoutUrl}" class="checkout-btn">Proceed to Checkout</a>
         `;
+        
+        // Add event listener for direct payment
+        const directPaymentBtn = cartFooter.querySelector('.direct-payment');
+        if (directPaymentBtn) {
+            directPaymentBtn.addEventListener('click', () => {
+                // Find the first product with a direct payment link
+                const directPaymentItem = cart.find(item => item.paymentLink);
+                if (directPaymentItem) {
+                    window.location.href = directPaymentItem.paymentLink;
+                }
+            });
+        }
     } else {
-        cartFooter.innerHTML = ''; // Clear footer when cart is empty
+        // Regular checkout flow
+        cartFooter.innerHTML = `
+            <div class="cart-total">
+                <span>Total: $${total.toFixed(2)}</span>
+                <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+            </div>
+        `;
     }
 }
 
