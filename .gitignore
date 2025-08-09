@@ -1,34 +1,5 @@
-# System files
 .DS_Store
-
-# Environment variables
-.env
 .env.local
-.env.development
-.env.production
-
-# Dependencies
-node_modules/
-
-# Build output
-.next/
-out/
-build/
-
-# Debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Local development
-.vercel
-.netlify
-
-# IDE specific files
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.env.example
+.env
+node_modules

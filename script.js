@@ -49,7 +49,7 @@ const products = [
         price: 59.99,
         inStock: true,
         description: 'A beautiful, non-slip yoga mat with a celestial moon phase print to inspire your practice.', 
-        paymentLink: 'https://buy.stripe.com/00wfZa8Hnduq0Pu9f7gnK02' 
+        affiliateLink: null
     },
     { 
         id: 6, 
@@ -59,7 +59,6 @@ const products = [
         price: 59.99,
         inStock: true,
         description: 'A textured, eco-friendly cork yoga mat that offers superior grip and sustainability.', 
-        paymentLink: 'https://buy.stripe.com/3cIbIU4r7bmi7dS2QJgnK03', 
         affiliateLink: null
     },
     { 
@@ -188,27 +187,42 @@ function renderProducts(category = 'all') {
     });
 }
 
+// Get payment links from environment variables or use defaults
+function getPaymentLinks() {
+    return {
+        5: process.env.PAYMENT_LINK_CELESTIAL_MAT || 'https://buy.stripe.com/00wfZa8Hnduq0Pu9f7gnK02',
+        6: process.env.PAYMENT_LINK_ECO_MAT || 'https://buy.stripe.com/3cIbIU4r7bmi7dS2QJgnK03'
+    };
+}
+
 function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    
-    // If product has a direct payment link, redirect to it immediately
-    if (product.paymentLink) {
-        window.location.href = product.paymentLink;
+    // Check if product is already in cart
+    if (cart.find(item => item.id === productId)) {
+        showToast('Item is already in your cart.');
         return;
     }
     
-    // For regular products, add to cart
-    const cartItem = cart.find(item => item.id === productId);
-    if (cartItem) {
-        cartItem.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
+    const productToAdd = products.find(p => p.id === productId);
+    if (!productToAdd) return;
+    
+    // Check if this is a product with direct payment link
+    const paymentLinks = getPaymentLinks();
+    const hasDirectLink = paymentLinks[productId];
+    
+    if (hasDirectLink) {
+        // For products with direct payment links, go straight to checkout
+        cart = [productToAdd]; // Clear cart and add only this item
+        saveCart();
+        updateCartUI();
+        window.location.href = 'checkout.html';
+        return;
     }
     
+    // For regular products, add to cart normally
+    cart.push(productToAdd);
     saveCart();
     updateCartUI();
-    showToast(`${product.name} added to cart`);
+    showToast('Added to cart!');
     playAudio('add');
 }
 
@@ -266,47 +280,43 @@ function renderCartItems() {
 }
 
 function updateCartFooter() {
-    const cartFooter = document.getElementById('cart-footer');
-    if (!cartFooter) return;
-    
-    if (cart.length === 0) {
-        cartFooter.innerHTML = '<p>Your cart is empty</p>';
-        return;
-    }
-    
-    const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-    
-    // Check if any item in cart has a direct payment link
-    const hasDirectPayment = cart.some(item => item.paymentLink);
-    
-    if (hasDirectPayment) {
-        // For direct payment items, show a simplified checkout button
+    if (cart.length > 0) {
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        const paymentLinks = getPaymentLinks();
+        
+        // Check if we have a product with direct payment link
+        const hasDirectLink = cart.length === 1 && paymentLinks[cart[0].id];
+        
         cartFooter.innerHTML = `
             <div class="cart-total">
-                <span>Total: $${total.toFixed(2)}</span>
-                <button class="checkout-btn direct-payment">Checkout with Direct Payment</button>
+                <span>Subtotal:</span>
+                <span>$${total.toFixed(2)}</span>
             </div>
+            <button class="checkout-btn" id="checkout-button">
+                <span class="button-text">${hasDirectLink ? 'Proceed to Secure Checkout' : 'View Cart'}</span>
+                <span class="button-loader" style="display: none;">Processing...</span>
+            </button>
         `;
         
-        // Add event listener for direct payment
-        const directPaymentBtn = cartFooter.querySelector('.direct-payment');
-        if (directPaymentBtn) {
-            directPaymentBtn.addEventListener('click', () => {
-                // Find the first product with a direct payment link
-                const directPaymentItem = cart.find(item => item.paymentLink);
-                if (directPaymentItem) {
-                    window.location.href = directPaymentItem.paymentLink;
-                }
-            });
-        }
+        // Add event listener to the checkout button
+        document.getElementById('checkout-button')?.addEventListener('click', () => {
+            if (cart.length === 0) {
+                showToast('Your cart is empty. Add items before checkout.');
+                return;
+            }
+            
+            // If we have a direct payment link, go straight to it
+            if (hasDirectLink) {
+                window.location.href = paymentLinks[cart[0].id];
+                return;
+            }
+            
+            // Otherwise, go to the checkout page
+            saveCart();
+            window.location.href = 'checkout.html';
+        });
     } else {
-        // Regular checkout flow
-        cartFooter.innerHTML = `
-            <div class="cart-total">
-                <span>Total: $${total.toFixed(2)}</span>
-                <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
-            </div>
-        `;
+        cartFooter.innerHTML = '<p class="empty-cart-msg">Your cart is empty. Add some items to get started!</p>';
     }
 }
 

@@ -267,7 +267,7 @@ nav a:hover::after, nav a.active::after {
     border-radius: 5px;
     font-weight: 600;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
     margin-top: auto;
     border: none;
     cursor: pointer;
@@ -275,36 +275,6 @@ nav a:hover::after, nav a.active::after {
     font-size: 1rem;
     display: block;
     width: 100%;
-}
-
-/* Style for direct payment button */
-.checkout-btn.direct-payment {
-    background-color: #4CAF50; /* Green color for direct payment */
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    text-align: center;
-    display: block;
-}
-
-.checkout-btn.direct-payment:hover {
-    background-color: #45a049; /* Darker green on hover */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.checkout-btn.direct-payment:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .buy-button:hover {
