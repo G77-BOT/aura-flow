@@ -258,12 +258,17 @@ function renderCartItems() {
 function updateCartFooter() {
     if (cart.length > 0) {
         const total = cart.reduce((sum, item) => sum + item.price, 0);
+        
+        // Create checkout URL with cart data
+        const cartData = encodeURIComponent(JSON.stringify(cart));
+        const checkoutUrl = `checkout.html?cart=${cartData}`;
+        
         cartFooter.innerHTML = `
             <div class="cart-total">
                 <span>Subtotal:</span>
                 <span>$${total.toFixed(2)}</span>
             </div>
-            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+            <a href="${checkoutUrl}" class="checkout-btn">Proceed to Checkout</a>
         `;
     } else {
         cartFooter.innerHTML = ''; // Clear footer when cart is empty
